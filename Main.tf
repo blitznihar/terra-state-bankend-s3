@@ -1,12 +1,23 @@
+provider "random" {
+  
+}
+resource "random_string" "lower" {
+  length  = 8
+  upper   = false
+  lower   = true
+  number  = false
+  special = false
+}
+
 provider "aws" {
   access_key = "${var.aws_access_key["${var.env}"]}"
   secret_key = "${var.aws_secret_key["${var.env}"]}"
   region     = "${var.region["${var.env}"]}"
 }
-# terraform state file setup
-# create an S3 bucket to store the state file in
+
+
 resource "aws_s3_bucket" "terraform-state-storage-s3" {
-  bucket = "terraform-remote-state-storage-s3"
+  bucket = "terraform-remote-state-storage-s3-${random_string.lower.result}"
 
   versioning {
     enabled = true
@@ -23,24 +34,6 @@ resource "aws_s3_bucket" "terraform-state-storage-s3" {
 
 }
 
-# resource "aws_s3_bucket_policy" "policy_terraform-state-storage-s3" {
-#   bucket = "${aws_s3_bucket.terraform-state-storage-s3}"
-#   policy = <<POLICY
-# {
-#   "Version": "2012-10-17",
-#   "Statement": [
-#     {
-#       "Effect": "Allow",
-#       "Action": "s3:ListBucket"
-#     },
-#     {
-#       "Effect": "Allow",
-#       "Action": ["s3:GetObject", "s3:PutObject"]
-#     }
-#   ]
-# }
-# POLICY
-# }
 
 resource "aws_dynamodb_table" "dynamodb-terraform-state-lock" {
   name           = "terraform-state-lock-dynamo"
@@ -58,27 +51,3 @@ resource "aws_dynamodb_table" "dynamodb-terraform-state-lock" {
     "Purpose" = "Terraform"
   }
 }
-
-# resource "aws_iam_policy" "dynamodb-terraform-state-lock-policy" {
-#   aws_dynamodb_table = "${aws_dynamodb_table.dynamodb-terraform-state-lock}"
-#   policy             = <<EOF
-#   {
-#   "Version": "2012-10-17",
-#   "Statement": [
-#     {
-#       "Effect": "Allow",
-#       "Action": [
-#         "dynamodb:GetItem",
-#         "dynamodb:PutItem",
-#         "dynamodb:DeleteItem"
-#       ]
-#     }
-#   ]
-# }
-# EOF
-# }
-
-# resource "aws_iam_policy_attachment" "test-attach"{
-
-
-# }
