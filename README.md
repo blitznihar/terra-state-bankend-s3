@@ -1,3 +1,4 @@
+![CI](https://github.com/blitznihar/terra-state-bankend-s3/workflows/CI/badge.svg)
 # terra-state-bankend-s3
 ## Terraform state bankend S3 with Dynamodb for lock management
 
